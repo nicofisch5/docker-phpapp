@@ -54,6 +54,14 @@ services:
     networks:
       - app-network
 
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - app-network
+
   mailcatcher:
     image: schickling/mailcatcher:latest
     container_name: mailcatcher
