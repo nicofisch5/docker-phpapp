@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: php:7.2
-    container_name: app
+    container_name: php-app
     restart: unless-stopped
     tty: true
     environment:
@@ -23,14 +23,11 @@ services:
   #Nginx Service
   webserver:
     image: nginx:alpine
-    container_name: webserver
+    container_name: nginx
     restart: unless-stopped
     tty: true
     expose:
       - 80
-#    ports:
-#      - "80:80"
-#      - "443:443"
     volumes:
       - ./www:/var/www
       - ./nginx/conf.d/:/etc/nginx/conf.d/
@@ -38,12 +35,12 @@ services:
       - proxy
     labels:
       traefik.enable: true
-      traefik.http.routers.nginxnextcloud-http.rule: Host(`ofmanager.z5.devl`) # indique à Traefik que le Host de la requête doit être 'xxx.xxx.xxx'
+      traefik.http.routers.nginxnextcloud-http.rule: Host(`${DOMAIN_NAME}`) # indique à Traefik que le Host de la requête doit être 'xxx.xxx.xxx'
       traefik.http.routers.nginxnextcloud-http.entrypoints: http # indique à Traefik que la route n'écoute que l'entrypoint 'web' (port 80)
       traefik.http.routers.sample-http.service: sample-http # associe la route au service qu'on crée en dessous 'traefik.http.services.sample-http.loadBalancer.server.port=80'
       traefik.http.services.sample-http.loadBalancer.server.port: 80 # on indique au service de transférer la requête sur le port 80 du container
       #traefik.http.routers.nginxnextcloud-http.middlewares: https-redirect@file
-      #traefik.http.routers.nginxnextcloud-https.rule: "Host(`ofmanager.z5.devl`)"
+      #traefik.http.routers.nginxnextcloud-https.rule: "Host(`${DOMAIN_NAME}`)"
       #traefik.http.routers.nginxnextcloud-https.entrypoints: "https"
       #traefik.http.routers.nginxnextcloud-https.tls: "true"
       #traefik.http.routers.nginxnextcloud-https.tls.certresolver: "default"
@@ -89,6 +86,6 @@ networks:
     external: true # utilise le network externe utilisé par Traefik
 
 #Volumes
-volumes:
-  dbdata:
-    driver: local
+#volumes:
+#  dbdata:
+#    driver: local
