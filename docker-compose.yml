@@ -35,12 +35,12 @@ services:
       - proxy
     labels:
       traefik.enable: true
-      traefik.http.routers.nginxnextcloud-http.rule: Host(`${DOMAIN_NAME}`) # indique à Traefik que le Host de la requête doit être 'xxx.xxx.xxx'
-      traefik.http.routers.nginxnextcloud-http.entrypoints: http # indique à Traefik que la route n'écoute que l'entrypoint 'web' (port 80)
-      traefik.http.routers.sample-http.service: sample-http # associe la route au service qu'on crée en dessous 'traefik.http.services.sample-http.loadBalancer.server.port=80'
-      traefik.http.services.sample-http.loadBalancer.server.port: 80 # on indique au service de transférer la requête sur le port 80 du container
+      traefik.http.routers.nginx.rule: Host(`${APP_DOMAIN_NAME}`) # indique à Traefik que le Host de la requête doit être 'xxx.xxx.xxx'
+      traefik.http.routers.nginx.entrypoints: http # indique à Traefik que la route n'écoute que l'entrypoint 'web' (port 80)
+      traefik.http.routers.nginx-http.service: nginx-http # associe la route au service qu'on crée en dessous 'traefik.http.services.sample-http.loadBalancer.server.port=80'
+      traefik.http.services.nginx-http.loadBalancer.server.port: 80 # on indique au service de transférer la requête sur le port 80 du container
       #traefik.http.routers.nginxnextcloud-http.middlewares: https-redirect@file
-      #traefik.http.routers.nginxnextcloud-https.rule: "Host(`${DOMAIN_NAME}`)"
+      #traefik.http.routers.nginxnextcloud-https.rule: "Host(`${APP_DOMAIN_NAME}`)"
       #traefik.http.routers.nginxnextcloud-https.entrypoints: "https"
       #traefik.http.routers.nginxnextcloud-https.tls: "true"
       #traefik.http.routers.nginxnextcloud-https.tls.certresolver: "default"
@@ -64,13 +64,18 @@ services:
     networks:
       - proxy
 
-#  adminer:
-#    image: adminer
-#    restart: always
-#    ports:
-#      - 8080:8080
-#    networks:
-#      - proxy
+  adminer:
+    image: adminer
+    container_name: mailcatcher
+    restart: always
+    labels:
+      traefik.enable: true
+      traefik.http.routers.mailcatcher.rule: Host(`${MAILCATCHER_DOMAIN_NAME}`) # indique à Traefik que le Host de la requête doit être 'xxx.xxx.xxx'
+      traefik.http.routers.mailcatcher.entrypoints: http # indique à Traefik que la route n'écoute que l'entrypoint 'web' (port 80)
+      traefik.http.routers.mailcatcher-http.service: mailcatcher-http # associe la route au service qu'on crée en dessous 'traefik.http.services.sample-http.loadBalancer.server.port=80'
+      traefik.http.services.mailcatcher-http.loadBalancer.server.port: 8080 # on indique au service de transférer la requête sur le port 8080 du container
+    networks:
+      - proxy
 
 #  mailcatcher:
 #    image: schickling/mailcatcher:latest
