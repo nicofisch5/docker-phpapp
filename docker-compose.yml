@@ -66,25 +66,31 @@ services:
 
   adminer:
     image: adminer
-    container_name: mailcatcher
+    container_name: adminer
     restart: always
+    labels:
+      traefik.enable: true
+      traefik.http.routers.adminer.rule: Host(`${ADMINER_DOMAIN_NAME}`) # indique à Traefik que le Host de la requête doit être 'xxx.xxx.xxx'
+      traefik.http.routers.adminer.entrypoints: http # indique à Traefik que la route n'écoute que l'entrypoint 'web' (port 80)
+      traefik.http.routers.adminer-http.service: adminer-http # associe la route au service qu'on crée en dessous 'traefik.http.services.sample-http.loadBalancer.server.port=80'
+      traefik.http.services.adminer-http.loadBalancer.server.port: 8080 # on indique au service de transférer la requête sur le port 8080 du container
+    networks:
+      - proxy
+
+  mailcatcher:
+    image: schickling/mailcatcher:latest
+    container_name: mailcatcher
+    ports:
+      - 8003:1025 # Tester si l'envoi d'mail arrive bien dans mailcatcher
+#     - 8100:1080
     labels:
       traefik.enable: true
       traefik.http.routers.mailcatcher.rule: Host(`${MAILCATCHER_DOMAIN_NAME}`) # indique à Traefik que le Host de la requête doit être 'xxx.xxx.xxx'
       traefik.http.routers.mailcatcher.entrypoints: http # indique à Traefik que la route n'écoute que l'entrypoint 'web' (port 80)
       traefik.http.routers.mailcatcher-http.service: mailcatcher-http # associe la route au service qu'on crée en dessous 'traefik.http.services.sample-http.loadBalancer.server.port=80'
-      traefik.http.services.mailcatcher-http.loadBalancer.server.port: 8080 # on indique au service de transférer la requête sur le port 8080 du container
+      traefik.http.services.mailcatcher-http.loadBalancer.server.port: 1080 # on indique au service de transférer la requête sur le port 8080 du container
     networks:
       - proxy
-
-#  mailcatcher:
-#    image: schickling/mailcatcher:latest
-#    container_name: mailcatcher
-#    ports:
-#        - 8003:1025
-#        - 8100:1080
-#    networks:
-#      - proxy
 
 networks:
   proxy:
