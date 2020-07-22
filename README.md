@@ -1,4 +1,4 @@
-# Docker for Radama PMS - Front part
+# Docker for Radama PMS - Back part
 This repository contains a dockerized environment for Radama PMS - Front part
 PHP, MySQL, Nginx, Adminer, Mailcatcher
 
