@@ -1,18 +1,15 @@
-version: '3'
-services:
+version: '3.4'
 
-  #PHP Service
+services:
+  # PHP Service
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    image: php:7.2
-    container_name: php-app
+    image: php:7.3
+    container_name: api-radama-php
     restart: unless-stopped
     tty: true
-    environment:
-      SERVICE_NAME: app
-      SERVICE_TAGS: dev
     working_dir: /var/www
     volumes:
        - ./www:/var/www
@@ -20,10 +17,10 @@ services:
     networks:
       - proxy
 
-  #Nginx Service
+  # Nginx Service
   webserver:
     image: nginx:alpine
-    container_name: nginx
+    container_name: api-radama-nginx
     restart: unless-stopped
     tty: true
     expose:
@@ -48,25 +45,21 @@ services:
   #MySQL Service
   db:
     image: mysql:5.7.22
-    container_name: db
+    container_name: api-radama-db
     restart: unless-stopped
     tty: true
     ports:
       - "3306:3306"
-    environment:
-      MYSQL_DATABASE: laravel
-      MYSQL_ROOT_PASSWORD: admin
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
     volumes:
-      - ./.mysql:/var/lib/mysql
+      - api-radama-db-data:/var/lib/mysql
       - ./mysql/my.cnf:/etc/mysql/my.cnf
     networks:
       - proxy
 
+  # MySQL administrator
   adminer:
     image: adminer
-    container_name: adminer
+    container_name: api-radama-adminer
     restart: always
     labels:
       traefik.enable: true
@@ -77,12 +70,12 @@ services:
     networks:
       - proxy
 
+  # Mail service
   mailcatcher:
     image: schickling/mailcatcher:latest
-    container_name: mailcatcher
+    container_name: api-radama-mailcatcher
     ports:
-      - 8003:1025 # Tester si l'envoi d'mail arrive bien dans mailcatcher
-#     - 8100:1080
+      - 8003:1025 # Tester si l'envoi d'email arrive bien dans mailcatcher
     labels:
       traefik.enable: true
       traefik.http.routers.mailcatcher.rule: Host(`${MAILCATCHER_DOMAIN_NAME}`) # indique à Traefik que le Host de la requête doit être 'xxx.xxx.xxx'
@@ -92,11 +85,13 @@ services:
     networks:
       - proxy
 
+# Networks
 networks:
   proxy:
     external: true # utilise le network externe utilisé par Traefik
 
-#Volumes
-#volumes:
-#  dbdata:
-#    driver: local
+# Volumes
+volumes:
+  api-radama-db-data:
+    name: api-radama-db-data
+    driver: local
