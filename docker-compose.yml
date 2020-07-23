@@ -12,7 +12,7 @@ services:
     tty: true
     working_dir: /var/www
     volumes:
-       - ./www:/var/www
+       - ${SOURCE_DIRECTORY}:/var/www
        - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - proxy
