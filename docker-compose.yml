@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: php:7.3
+    image: php:7.3-fpm-xdebug
     container_name: api-radama-php
     restart: unless-stopped
     tty: true

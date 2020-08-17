@@ -15,6 +15,16 @@ Note: Tested onlu on Linux Ubuntu 20.04
 - [docker](https://docs.docker.com/install) (Tested: v19.03.8)
 - [docker-compose](https://docs.docker.com/compose/install) (Tested: v1.25.0)
 
+## Installation
+
+### Docker build
+
+Launch following command to build and tag our image:
+
+```bash
+docker build -t php:7.3-fpm-xdebug .
+```
+
 ## Configuration
 
 ### Env variables
